@@ -2,32 +2,33 @@ import board as bface
 import numpy as np 
 from board import Node
 from collections import deque
+import time
 
-
-def solution_trace(answer_node):
+def solution_trace(answer_node, rootNode):
     trace = []
     n = answer_node
-    while n is not None:
-        trace.append(n)
+    while n is not rootNode:
+        trace.append(n.board)
         n = n.parent
-    return list(reversed(trace))
+    return (list(reversed(trace)))
 
 def bfs(board):
     root = Node(board)
-    frontier = deque(root)
+    frontier = deque()
+    frontier.append(root)
     visited = list()
-
+    start = time.time()
     if bface.is_answer(root):
-        return solution_trace(root)
+        return solution_trace(root, root)
 
     while len(frontier) > 0:
         cur = frontier.popleft()
         if cur not in visited:
             visited.append(cur)
-
         for n in bface.get_neighbours(cur):
             if bface.is_answer(n):
-                solution_trace(n)
+                print(time.time() - start)
+                return solution_trace(n, root)
             if n not in frontier and n not in visited:
                 frontier.append(n)
     return None
@@ -42,7 +43,6 @@ def dfs(board):
     frontier.append(root)
     while len(frontier) > 0:
         cur = frontier.pop()
-        # TODO: equality by children not whole node
         if cur not in visited : visited.append(cur)
         for n in bface.get_neighbours(cur):
             if bface.is_answer(n):
@@ -55,6 +55,14 @@ def astar(board, heuritic):
     root = Node(board)
     
 
-board = np.arange(9) 
-board = np.random.shuffle(board) 
-board = np.reshape(board,[3,3])
+if __name__ == "__main__":
+    from board import __create_board
+    
+    nroot = np.reshape(
+        [2, 0, 3,
+         1, 4, 6,
+         7, 5, 8], [3,3])
+    # nroot = __create_board()
+    
+    from pprint import pprint
+    pprint((bfs(nroot)))
