@@ -42,12 +42,22 @@ class Node:
         self.board = board
         self.parent = parent
     def __eq__(self, rhs):
-        return self.board.tolist() == rhs.board.tolist()
-
+        if type(rhs) is Node:
+            return self.board.tolist() == rhs.board.tolist()
+        elif type(rhs) is tuple:
+            return self.board.tolist() == rhs[1].board.tolist()
+        else:
+            raise EnvironmentError
+    def __lt__(self, rhs):
+        return True
 def __create_board():
     n = np.arange(9)
     np.random.shuffle(n)
     return np.reshape(n,[3,3])
+
+answer_board = np.matrix(
+    "0,1,2;3,4,5;6,7,8"
+)
 if __name__ == "__main__":
     import numpy as np
     
