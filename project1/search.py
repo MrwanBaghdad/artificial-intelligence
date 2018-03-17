@@ -12,7 +12,9 @@ def solution_trace(answer_node, rootNode):# fuction of work includin
     while n is not rootNode:
         trace.append(n.board)
         n = n.parent
-    return list(reversed(trace))
+    
+    # print("path cost: "+str(len(trace)))
+    return { "answer": list(reversed(trace)), "path cost": str(len(trace))}
 
 
 def bfs(board):
@@ -31,10 +33,12 @@ def bfs(board):
         for n in bface.get_neighbours(cur):
             if bface.is_answer(n):
                 print(time.time() - start)
+                print("number of expanded nodes"+str(len(visited)))
                 return solution_trace(n, root)
             if n not in frontier and n not in visited:
                 frontier.append(n)
     return None
+
 
 def dfs(board):
     root = Node(board)
@@ -51,6 +55,7 @@ def dfs(board):
         for n in bface.get_neighbours(cur):
             if bface.is_answer(n):
                 print(time.time() - start_time)
+                print("number of expanded nodes"+str(len(visited)))
                 return solution_trace(n, root)
             if n not in frontier and n not in visited:
                 frontier.append(n)
@@ -58,6 +63,7 @@ def dfs(board):
 
 def astar(board, heuritic):
     from heapq import heappush, heappop, nsmallest
+    start_time = time.time()
     root = Node(board)
     visited = list()
     frontier = []
@@ -74,13 +80,16 @@ def astar(board, heuritic):
         cur = heappop(frontier)
         cur = cur[1]
         if bface.is_answer(cur):
+            print(time.time() - start_time)
+            print("number of expanded nodes",str(len(visited)))
+            print("...")
             return solution_trace(cur, root)
         visited.append(cur)
         for n in bface.get_neighbours(cur):
             if n not in visited and n not in frontier:
                 _heappush(n)
             elif n in frontier:
-                frontier.pop(n)
+                frontier.remove(n)
                 n.parent = cur
                 _heappush(n)
 
@@ -111,12 +120,19 @@ if __name__ == "__main__":
     from pprint import pprint
     #testing dfs and bfs
     # pprint((dfs(nroot)))
-    # pprint(bfs(nroot))
+    print("BFS")
+    pprint(bfs(nroot))
+    
+    print("DFS")
+    pprint(dfs(np.reshape(
+        [1,2,3,4,5,6,7,0,8],
+        [3,3]
+    )))
     
     #testing heursistic 
-    # print(manhattan_distance(nroot))
-    # print(manhattan_distance(np.reshape(np.arange(9), [3,3])))
     
-    # print(euclidian_distance(nroot))
+    print("Astar manhatan")
     pprint(astar(nroot, manhattan_distance))
     
+    print("Astart with euclidian distance")
+    pprint(astar(nroot, euclidian_distance))
